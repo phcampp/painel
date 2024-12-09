@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel do Pedro</title>
+  <style>
+    /* Estilo base */
+    body {
+      font-family: "Courier New", Courier, monospace;
+      background: black;
+      color: #00ff00;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+
+    h1, h2 {
+      text-shadow: 0 0 10px #00ff00;
+      animation: glow 2s infinite alternate;
+    }
+
+    p {
+      text-shadow: 0 0 5px #00ff00;
+    }
+
+    /* Fundo com linhas verdes (tema hacker) */
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: repeating-linear-gradient(
+        to bottom,
+        transparent,
+        transparent 4px,
+        rgba(0, 255, 0, 0.2) 5px
+      );
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* Hacker estilizado */
+    .hacker {
+      position: relative;
+      margin: 20px auto;
+      width: 120px;
+      height: 120px;
+    }
+
+    .hacker .hood {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(to bottom, #001100, #003300);
+      border-radius: 50% 50% 0 0;
+      position: relative;
+    }
+
+    .hacker .face {
+      width: 60%;
+      height: 60%;
+      background: black;
+      border: 3px solid #00ff00;
+      border-radius: 50%;
+      position: absolute;
+      top: 40%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .hacker .eyes {
+      position: absolute;
+      top: 40%;
+      left: 15%;
+      width: 70%;
+      height: 10px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .hacker .eyes div {
+      width: 15px;
+      height: 15px;
+      background: #00ff00;
+      border-radius: 50%;
+    }
+
+    /* Tela de senha */
+    #passwordScreen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: black;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 100;
+    }
+
+    #passwordScreen input {
+      width: 200px;
+      text-align: center;
+      padding: 10px;
+      margin: 10px 0;
+      border: 2px solid #00ff00;
+      background: black;
+      color: #00ff00;
+    }
+
+    #passwordScreen button {
+      padding: 10px 20px;
+      background: black;
+      border: 2px solid #00ff00;
+      color: #00ff00;
+      cursor: pointer;
+    }
+
+    footer {
+      margin-top: 30px;
+      font-size: 12px;
+      text-shadow: 0 0 5px #00ff00;
+      z-index: 10;
+      position: relative;
+    }
+
+    /* Áreas protegidas */
+    #loginArea, #dataArea, #supportArea {
+      display: none;
+    }
+
+    /* Pop-ups */
+    .popup {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: black;
+      color: #00ff00;
+      border: 2px solid #00ff00;
+      padding: 10px;
+      border-radius: 5px;
+      box-shadow: 0 0 10px #00ff00;
+      display: none;
+      animation: fadeIn 0.5s ease-in-out;
+      z-index: 10;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    @keyframes glow {
+      from {
+        text-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00, 0 0 30px #00ff00;
+      }
+      to {
+        text-shadow: 0 0 20px #00ff00, 0 0 40px #00ff00, 0 0 50px #00ff00;
+      }
+    }
+
+    /* Botões */
+    input, button {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      background: black;
+      color: #00ff00;
+      border: 2px solid #00ff00;
+      border-radius: 5px;
+    }
+    button:hover {
+      background: #00ff00;
+      color: black;
+    }
+  </style>
+</head>
+<body>
+  <!-- Tela de senha -->
+  <div id="passwordScreen">
+    <h1>Digite a senha para acessar</h1>
+    <input type="password" id="sitePassword" placeholder="Senha">
+    <button onclick="validatePassword()">Entrar</button>
+  </div>
+
+  <!-- Conteúdo do site -->
+  <div id="loginArea">
+    <h1>Bem vindo(a) ao Painel do Pedro</h1>
+    <p>Este site foi criado para ser usado para o bem. Use com responsabilidade!</p>
+    <h2>Login</h2>
+    <input type="text" id="username" placeholder="Usuário">
+    <input type="password" id="loginPassword" placeholder="Senha">
+    <button onclick="login()">Entrar</button>
+  </div>
+
+  <div id="dataArea">
+    <h2>Busca de Dados</h2>
+    <input type="text" id="dataInput" placeholder="Digite os dados">
+    <button onclick="searchData()">Puxar Dados</button>
+    <div id="fakeData" style="margin-top: 20px;"></div>
+  </div>
+
+  <div id="supportArea">
+    <h2>Suporte</h2>
+    <p>Envie suas dúvidas ou mensagens abaixo:</p>
+    <input type="text" id="supportName" placeholder="Seu Nome">
+    <textarea id="supportMessage" placeholder="Sua Mensagem" rows="4"></textarea>
+    <button onclick="sendSupportMessage()">Enviar</button>
+  </div>
+
+  <!-- Pop-ups -->
+  <div id="successPasswordPopup" class="popup">✅ Senha correta!</div>
+  <div id="loginPopup" class="popup">✅ Login Liberado!</div>
+  <div id="loadingPopup" class="popup">Carregando...</div>
+  <div id="successPopup" class="popup">Deu tudo certo! Agora verifique seu email.</div>
+  <div id="supportPopup" class="popup">✅ Mensagem enviada com sucesso!</div>
+
+  <footer>
+    © 2024 Pedro - Todos os direitos reservados.
+  </footer>
+
+  <script>
+    function validatePassword() {
+      const password = document.getElementById("sitePassword").value;
+      if (password === "1058") {
+        document.getElementById("passwordScreen").style.display = "none";
+        document.getElementById("loginArea").style.display = "block";
+        showPopup("successPasswordPopup");
+      } else {
+        alert("Senha incorreta!");
+      }
+    }
+
+    function login() {
+      const user = document.getElementById("username").value;
+      const pass = document.getElementById("loginPassword").value;
+      if (user && pass) {
+        document.getElementById("dataArea").style.display = "block";
+        document.getElementById("supportArea").style.display = "block";
+        showPopup("loginPopup");
+      } else {
+        alert("Preencha o login corretamente!");
+      }
+    }
+
+    function searchData() {
+      const fakeName = "João da Silva";
+      const fakeCPF = "123.456.789-00";
+      const fakeAddress = "Rua Fictícia, 123, São Paulo, SP";
+
+      const output = `
+        <p><strong>Nome:</strong> ${fakeName}</p>
+        <p><strong>CPF:</strong> ${fakeCPF}</p>
+        <p><strong>Endereço:</strong> ${fakeAddress}</p>
+      `;
+      document.getElementById("fakeData").innerHTML = output;
+      showPopup("loadingPopup");
+      setTimeout(() => hidePopup("loadingPopup"), 2000);
+    }
+
+    function sendSupportMessage() {
+      const name = document.getElementById("supportName").value;
+      const message = document.getElementById("supportMessage").value;
+
+      if (name && message) {
+        showPopup("supportPopup");
+        setTimeout(() => hidePopup("supportPopup"), 2000);
+        document.getElementById("supportName").value = "";
+        document.getElementById("supportMessage").value = "";
+      } else {
+        alert("Por favor, preencha todos os campos!");
+      }
+    }
+
+    function showPopup(id) {
+      document.getElementById(id).style.display = "block";
+    }
+
+    function hidePopup(id) {
+      document.getElementById(id).style.display = "none";
+    }
+  </script>
+</body>
+</html>
